@@ -1,0 +1,30 @@
+name: salalcroj_issue_bot
+
+on:
+  issues:
+    types: [opened, edited] # Se dispara al crear o cambiar el issue
+  workflow_dispatch:        # Permite ejecución manual
+  project_card:             # Se dispara al moverlo de columna (si usas Proyectos de GitHub)
+    types: [moved]
+
+jobs:
+  gestion-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      # Acción distinta: Usaremos 'actions-ecosystem/action-add-labels' 
+      # para poner una etiqueta automática al issue
+      - name: Etiquetar Issue Automáticamente
+        if: github.event_name == 'issues'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "revisar-salalcroj"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log de Actividad
+        run: |
+          echo "Acción ejecutada por el UVUS: salalcroj"
+          echo "Evento: ${{ github.event_name }}"
+          echo "Estado del issue: ${{ github.event.issue.state }}"
